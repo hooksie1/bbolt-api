@@ -17,6 +17,7 @@ limitations under the License.
 package server
 
 import (
+	"fmt"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
@@ -70,7 +71,8 @@ func Serve() {
 	apiRouter.Use(logger)
 
 
-	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_PORT"), router))
+	port := fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))
+	log.Fatal(http.ListenAndServe(port, router))
 
 }
 
