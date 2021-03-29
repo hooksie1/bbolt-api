@@ -30,7 +30,16 @@ var db *bbolt.DB
 
 type errHandler func(http.ResponseWriter, *http.Request) error
 
-func init() {
+
+func checkEnv() bool {
+	if os.Getenv("DATABASE_PATH") == "" {
+		return false
+	}
+
+	return true
+}
+
+func Serve() {
 	var err error
 
 	if !checkEnv() {
@@ -44,17 +53,6 @@ func init() {
 		return
 	}
 
-}
-
-func checkEnv() bool {
-	if os.Getenv("DATABASE_PATH") == "" {
-		return false
-	}
-
-	return true
-}
-
-func Serve() {
 	defer db.Close()
 
 

@@ -31,6 +31,9 @@ func getBucketKeys(w http.ResponseWriter, r *http.Request) error {
 	data := make(map[string]string)
 	if err := db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
+		if bucket == nil {
+			return NewHTTPError(nil, 404, "no kv pairs in bucket")
+		}
 		cursor := bucket.Cursor()
 
 		for k, v := cursor.First(); k != nil; k, v = cursor.Next() {

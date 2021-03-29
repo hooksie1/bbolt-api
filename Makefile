@@ -2,8 +2,7 @@ PROJECT_NAME := "bbolt-api"
 PKG := "github.com/hooksie1/$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
-DOCKER_VERSION := $$(git describe --tags | cut -d '-' -f 1)
-VERSION := $$(git describe --tags | cut -d '-' -f 1 | cut -d '.' -f 1)
+VERSION := $$(git describe --tags | cut -d '-' -f 1)
 
 
 .PHONY: all build docker dep clean test coverage lint
