@@ -17,6 +17,7 @@ limitations under the License.
 package server
 
 import (
+	"fmt"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
@@ -29,7 +30,7 @@ var dbName = os.Getenv("DATABASE_PATH")
 var Version = "dev"
 var db *bbolt.DB
 
-type ErrHandler func(http.ResponseWriter, *http.Request) error
+type errHandler func(http.ResponseWriter, *http.Request) error
 
 func init() {
 	var err error
@@ -58,18 +59,21 @@ func checkEnv() bool {
 func Serve() {
 	defer db.Close()
 
+	apiVersion := fmt.Sprintf("/%s/", Version)
+
 	router := mux.NewRouter().StrictSlash(true)
+	apiRouter := router.PathPrefix(apiVersion).Subrouter().StrictSlash(true)
 
-	router.PathPrefix(Version)
-	router.Handle("/buckets/{bucket}", ErrHandler(GetBucketByID)).Methods("GET")
-	router.Handle("/buckets/{bucket}", ErrHandler(CreateBucket)).Methods("POST")
-	router.Handle("/buckets/{bucket}", ErrHandler(DeleteBucketByID)).Methods("DELETE")
-	router.Handle("/buckets/{bucket}/keys", ErrHandler(GetBucketKeys)).Methods("GET")
-	router.Handle("/buckets/{bucket}/keys/{key}", ErrHandler(GetKVByID)).Methods("GET")
-	router.Handle("/buckets/{bucket}/keys/{key}", ErrHandler(CreateKV)).Methods("POST")
-	router.Handle("/buckets/{bucket}/keys/{key}", ErrHandler(DeleteKVByID)).Methods("DELETE")
+	apiRouter.Handle("/buckets/{bucket}", errHandler(getBucketByID)).Methods("GET")
+	apiRouter.Handle("/buckets/{bucket}", errHandler(createBucket)).Methods("POST")
+	apiRouter.Handle("/buckets/{bucket}", errHandler(deleteBucketByID)).Methods("DELETE")
+	apiRouter.Handle("/buckets/{bucket}/keys", errHandler(getBucketKeys)).Methods("GET")
+	apiRouter.Handle("/buckets/{bucket}/keys/{key}", errHandler(getKVByID)).Methods("GET")
+	apiRouter.Handle("/buckets/{bucket}/keys/{key}", errHandler(createKV)).Methods("POST")
+	apiRouter.Handle("/buckets/{bucket}/keys/{key}", errHandler(deleteKVByID)).Methods("DELETE")
 
-	router.Use(logger)
+	apiRouter.Use(logger)
+
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 

@@ -26,7 +26,7 @@ type Record struct {
 	Data string `json:"data"`
 }
 
-func GetBucketKeys(w http.ResponseWriter, r *http.Request) error {
+func getBucketKeys(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	data := make(map[string]string)
 	if err := db.View(func(tx *bbolt.Tx) error {
@@ -52,7 +52,7 @@ func GetBucketKeys(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func GetKVByID(w http.ResponseWriter, r *http.Request) error {
+func getKVByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	var record Record
 	if err := db.View(func(tx *bbolt.Tx) error {
@@ -77,7 +77,7 @@ func GetKVByID(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func CreateKV(w http.ResponseWriter, r *http.Request) error {
+func createKV(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	record, err := keyData(r.Body)
 	if err != nil {
@@ -95,7 +95,7 @@ func CreateKV(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func DeleteKVByID(w http.ResponseWriter, r *http.Request) error {
+func deleteKVByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))

@@ -21,7 +21,7 @@ import (
 	"net/http"
 )
 
-func GetBucketByID(w http.ResponseWriter, r *http.Request) error {
+func getBucketByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	if err := db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket([]byte(vars["bucket"]))
@@ -37,7 +37,7 @@ func GetBucketByID(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func CreateBucket(w http.ResponseWriter, r *http.Request) error {
+func createBucket(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	if err := db.Update(func(tx *bbolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(vars["bucket"]))
@@ -53,7 +53,7 @@ func CreateBucket(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func DeleteBucketByID(w http.ResponseWriter, r *http.Request) error {
+func deleteBucketByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	if err := db.Update(func(tx *bbolt.Tx) error {
 		if err := tx.DeleteBucket([]byte(vars["bucket"])); err != nil {

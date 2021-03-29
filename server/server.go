@@ -83,7 +83,7 @@ func logger(inner http.Handler) http.Handler {
 	})
 }
 
-func (fn ErrHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (fn errHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := fn(w, r)
 	if err == nil {
