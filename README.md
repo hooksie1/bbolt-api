@@ -28,3 +28,15 @@ POST to the endpoint `/v1/buckets/{bucket}/keys/{key}` with the data in a payloa
 Ex:
 
 `curl http://localhost:8080/v1/mybucket/keys/mykey -d '{"data": "myvalue"}'`
+
+## Admin
+
+|Endpoint|Method|Action|
+|--------|------|------|
+|`/v1/backup/`| POST | Create a backup of the database|
+
+### Backing Up
+
+Redirect the output to a file. Ex:
+
+`curl -X POST http://localhost:8080/v1/backup > backup.db`
