@@ -32,7 +32,7 @@ type errHandler func(http.ResponseWriter, *http.Request) error
 
 
 func checkEnv() bool {
-	if os.Getenv("DATABASE_PATH") == "" {
+	if os.Getenv("DATABASE_PATH") == "" || os.Getenv("SERVER_PORT") == "" {
 		return false
 	}
 
@@ -43,7 +43,7 @@ func Serve() {
 	var err error
 
 	if !checkEnv() {
-		log.Println("Must set database host or path")
+		log.Println("Must set database path and server port")
 		os.Exit(1)
 	}
 
@@ -70,7 +70,7 @@ func Serve() {
 	apiRouter.Use(logger)
 
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_PORT"), router))
 
 }
 
