@@ -95,8 +95,16 @@ func CreateKV(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-//TODO: Implement DeleteKVByID handler
 func DeleteKVByID(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	db.Update(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket([]byte(vars["bucket"]))
+		if err := bucket.Delete([]byte(vars["key"])); err != nil {
+			return NewHTTPError(err, 500, "error deleting key")
+		}
+
+		return nil
+	})
 
 	return nil
 }
