@@ -58,16 +58,16 @@ func checkEnv() bool {
 func Serve() {
 	defer db.Close()
 
-	log.Println(db.Info())
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.PathPrefix(Version)
-	router.Handle("/buckets/{id}", ErrHandler(GetBucketByID)).Methods("GET")
-	router.Handle("/buckets/{id}", ErrHandler(CreateBucket)).Methods("POST")
-	router.Handle("/buckets/{id}", ErrHandler(DeleteBucketByID)).Methods("DELETE")
-	router.Handle("/buckets/{id}/{key}", ErrHandler(GetKVByID)).Methods("GET")
-	router.Handle("/buckets/{id}/data", ErrHandler(CreateKV)).Methods("POST")
-	router.Handle("/buckets/{id}/{key}", ErrHandler(DeleteKVByID)).Methods("DELETE")
+	router.Handle("/buckets/{bucket}", ErrHandler(GetBucketByID)).Methods("GET")
+	router.Handle("/buckets/{bucket}", ErrHandler(CreateBucket)).Methods("POST")
+	router.Handle("/buckets/{bucket}", ErrHandler(DeleteBucketByID)).Methods("DELETE")
+	router.Handle("/buckets/{bucket}/keys", ErrHandler(GetBucketKeys)).Methods("GET")
+	router.Handle("/buckets/{bucket}/keys/{key}", ErrHandler(GetKVByID)).Methods("GET")
+	router.Handle("/buckets/{bucket}/keys/{key}", ErrHandler(CreateKV)).Methods("POST")
+	router.Handle("/buckets/{bucket}/keys/{key}", ErrHandler(DeleteKVByID)).Methods("DELETE")
 
 	router.Use(logger)
 

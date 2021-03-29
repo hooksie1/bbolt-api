@@ -87,7 +87,6 @@ func (fn ErrHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := fn(w, r)
 	if err == nil {
-		log.Println(err)
 		return
 	}
 

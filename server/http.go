@@ -20,13 +20,13 @@ import (
 	"io"
 )
 
-func jsonData(r io.Reader) (map[string]string, error){
-	kv := make(map[string]string)
-	err := json.NewDecoder(r).Decode(&kv)
+func keyData(r io.Reader) (Record, error){
+	var record Record
+	err := json.NewDecoder(r).Decode(&record)
 	if err != nil {
-		return nil, err
+		return record, err
 	}
 
-	return kv, nil
+	return record, nil
 
 }

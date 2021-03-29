@@ -22,22 +22,54 @@ import (
 	"net/http"
 )
 
-func GetKVByID(w http.ResponseWriter, r *http.Request) error {
+type Record struct {
+	Data string `json:"data"`
+}
+
+func GetBucketKeys(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	data := make(map[string]string)
-	db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket([]byte(vars["id"]))
+	if err := db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket([]byte(vars["bucket"]))
+		cursor := bucket.Cursor()
+
+		for k, v := cursor.First(); k != nil; k, v = cursor.Next() {
+			data[string(k)] = string(v)
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	resp, err := json.Marshal(data)
+	if err != nil {
+		return NewHTTPError(err, 500, "error marshaling response")
+	}
+
+	w.Write(resp)
+
+	return nil
+}
+
+func GetKVByID(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	var record Record
+	if err := db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket([]byte(vars["bucket"]))
 		value := bucket.Get([]byte(vars["key"]))
 		if value == nil {
 			return NewHTTPError(nil, 404, "kv not found")
 		}
 
-		data[vars["key"]] = string(value)
+		record.Data = string(value)
 
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
 
-	err := json.NewEncoder(w).Encode(data)
+	err := json.NewEncoder(w).Encode(record)
 	if err != nil {
 		return NewHTTPError(err, 500, "error encoding json data")
 	}
@@ -47,17 +79,14 @@ func GetKVByID(w http.ResponseWriter, r *http.Request) error {
 
 func CreateKV(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
-	kv, err := jsonData(r.Body)
+	record, err := keyData(r.Body)
 	if err != nil {
 		return NewHTTPError(err, 500, "error decoding JSON data")
 	}
 	db.Update(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket([]byte(vars["id"]))
-		for k, v := range kv {
-			err := bucket.Put([]byte(k), []byte(v))
-			if err != nil {
-				return NewHTTPError(err, 500, "error writing to database")
-			}
+		bucket := tx.Bucket([]byte(vars["bucket"]))
+		if err := bucket.Put([]byte(vars["key"]), []byte(record.Data)); err != nil {
+			return NewHTTPError(err, 500, "error writing key/value pair")
 		}
 
 		return nil

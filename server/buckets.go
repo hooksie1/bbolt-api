@@ -16,7 +16,6 @@ limitations under the License.
 package server
 
 import (
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.etcd.io/bbolt"
 	"net/http"
@@ -24,45 +23,46 @@ import (
 
 func GetBucketByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
-	data := make(map[string]string)
-	db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket([]byte(vars["id"]))
-
-		cursor := bucket.Cursor()
-
-		for k, v := cursor.First(); k != nil; k, v = cursor.Next() {
-			data[string(k)] = string(v)
+	if err := db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(vars["bucket"]))
+		if b == nil {
+			return NewHTTPError(nil, 404, "bucket not found")
 		}
 
 		return nil
-	})
-
-	resp, err := json.Marshal(data)
-	if err != nil {
-		return NewHTTPError(err, 500, "error marshaling response")
+	}); err != nil {
+		return err
 	}
-
-	w.Write(resp)
 
 	return nil
 }
 
 func CreateBucket(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
-	db.Update(func(tx *bbolt.Tx) error {
-		_, err := tx.CreateBucket([]byte(vars["id"]))
+	if err := db.Update(func(tx *bbolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte(vars["bucket"]))
 		if err != nil {
 			return NewHTTPError(err, 500, "error creating bucket")
 		}
 
 		return nil
 
-	})
+	}); err != nil {
+		return err
+	}
 	return nil
 }
 
-//TODO: Implement DeleteBucketByID handler
 func DeleteBucketByID(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	if err := db.Update(func(tx *bbolt.Tx) error {
+		if err := tx.DeleteBucket([]byte(vars["bucket"])); err != nil {
+			return NewHTTPError(err, 500, "error deleting bucket")
+		}
 
+		return nil
+	}); err != nil {
+		return err
+	}
 	return nil
 }
