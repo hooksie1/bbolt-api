@@ -17,7 +17,6 @@ limitations under the License.
 package server
 
 import (
-	"fmt"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
@@ -27,7 +26,6 @@ import (
 )
 
 var dbName = os.Getenv("DATABASE_PATH")
-var Version = "dev"
 var db *bbolt.DB
 
 type errHandler func(http.ResponseWriter, *http.Request) error
@@ -59,10 +57,9 @@ func checkEnv() bool {
 func Serve() {
 	defer db.Close()
 
-	apiVersion := fmt.Sprintf("/%s/", Version)
 
 	router := mux.NewRouter().StrictSlash(true)
-	apiRouter := router.PathPrefix(apiVersion).Subrouter().StrictSlash(true)
+	apiRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
 
 	apiRouter.Handle("/buckets/{bucket}", errHandler(getBucketByID)).Methods("GET")
 	apiRouter.Handle("/buckets/{bucket}", errHandler(createBucket)).Methods("POST")
