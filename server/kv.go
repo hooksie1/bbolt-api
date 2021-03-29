@@ -22,7 +22,6 @@ import (
 	"net/http"
 )
 
-//TODO: Implement GetKVByID handler
 func GetKVByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	data := make(map[string]string)
@@ -46,7 +45,6 @@ func GetKVByID(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-//TODO: Implement CreateKV handler
 func CreateKV(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	kv, err := jsonData(r.Body)

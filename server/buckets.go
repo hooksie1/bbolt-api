@@ -22,7 +22,6 @@ import (
 	"net/http"
 )
 
-//TODO: Implement GetBucketByID handler
 func GetBucketByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	data := make(map[string]string)
