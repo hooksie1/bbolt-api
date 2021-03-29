@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/hooksie1/bbolt-api/server"
 )
 
 // startCmd represents the start command
@@ -41,5 +42,5 @@ func init() {
 }
 
 func startServer(cmd *cobra.Command, args []string) {
-
+	server.Serve()
 }

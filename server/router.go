@@ -17,22 +17,38 @@ limitations under the License.
 package server
 
 import (
+	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/spf13/viper"
 
 	"github.com/gorilla/mux"
 )
 
 var dbName = os.Getenv("DATABASE_PATH")
 var Version = "dev"
+var db *bbolt.DB
 
 type ErrHandler func(http.ResponseWriter, *http.Request) error
 
+func init() {
+	var err error
+
+	if !checkEnv() {
+		log.Println("Must set database host or path")
+		os.Exit(1)
+	}
+
+	db, err = bbolt.Open(dbName, 0644, nil)
+	if err != nil {
+		log.Printf("error opening database: %s", err)
+		return
+	}
+
+}
+
 func checkEnv() bool {
-	if os.Getenv("DATABASE_PATH") == "" && viper.GetBool("devMode") {
+	if os.Getenv("DATABASE_PATH") == "" {
 		return false
 	}
 
@@ -40,24 +56,20 @@ func checkEnv() bool {
 }
 
 func Serve() {
+	defer db.Close()
 
-	if !checkEnv() {
-		log.Println("Must set database host or path")
-		os.Exit(1)
-	}
-
+	log.Println(db.Info())
 	router := mux.NewRouter().StrictSlash(true)
 
-	apiRouter := router.PathPrefix(Version).Subrouter().StrictSlash(true)
-	apiRouter.Handle("/buckets", ErrHandler(GetBuckets)).Methods("GET")
-	apiRouter.Handle("/buckets/{id}", ErrHandler(GetBucketByID)).Methods("GET")
-	apiRouter.Handle("/buckets/{id}", ErrHandler(CreateBucket)).Methods("POST")
-	apiRouter.Handle("/buckets/{id}", ErrHandler(DeleteBucketByID)).Methods("DELETE")
-	apiRouter.Handle("/buckets/{id}/{key}", ErrHandler(GetKVByID)).Methods("GET")
-	apiRouter.Handle("/buckets/{id}/{key}", ErrHandler(CreateKV)).Methods("POST")
-	apiRouter.Handle("/buckets/{id}/{key}", ErrHandler(DeleteKVByID)).Methods("DELETE")
+	router.PathPrefix(Version)
+	router.Handle("/buckets/{id}", ErrHandler(GetBucketByID)).Methods("GET")
+	router.Handle("/buckets/{id}", ErrHandler(CreateBucket)).Methods("POST")
+	router.Handle("/buckets/{id}", ErrHandler(DeleteBucketByID)).Methods("DELETE")
+	router.Handle("/buckets/{id}/{key}", ErrHandler(GetKVByID)).Methods("GET")
+	router.Handle("/buckets/{id}/data", ErrHandler(CreateKV)).Methods("POST")
+	router.Handle("/buckets/{id}/{key}", ErrHandler(DeleteKVByID)).Methods("DELETE")
 
-	apiRouter.Use(logger)
+	router.Use(logger)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 

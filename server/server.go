@@ -24,6 +24,8 @@ import (
 	"time"
 )
 
+
+
 type ClientError interface {
 	Error() string
 	Body() ([]byte, error)
@@ -65,11 +67,6 @@ func NewHTTPError(err error, status int, detail string) error {
 	}
 }
 
-func getHealth(w http.ResponseWriter, r *http.Request) error {
-	w.WriteHeader(http.StatusOK)
-	return nil
-}
-
 // logger logs the endpoint requested and times how long the request takes.
 func logger(inner http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -90,10 +87,9 @@ func (fn ErrHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := fn(w, r)
 	if err == nil {
+		log.Println(err)
 		return
 	}
-
-	log.Printf("An error ocurred: %v", err)
 
 	clientError, ok := err.(ClientError)
 	if !ok {
