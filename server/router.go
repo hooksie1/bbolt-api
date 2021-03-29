@@ -59,6 +59,7 @@ func Serve() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	apiRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
+	adminRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
 
 	apiRouter.Handle("/buckets/{bucket}", errHandler(getBucketByID)).Methods("GET")
 	apiRouter.Handle("/buckets/{bucket}", errHandler(createBucket)).Methods("POST")
@@ -68,7 +69,12 @@ func Serve() {
 	apiRouter.Handle("/buckets/{bucket}/keys/{key}", errHandler(createKV)).Methods("POST")
 	apiRouter.Handle("/buckets/{bucket}/keys/{key}", errHandler(deleteKVByID)).Methods("DELETE")
 
+	adminRouter.Handle("/backup", errHandler(backupDB)).Methods("POST")
+
+
+
 	apiRouter.Use(logger)
+	adminRouter.Use(logger)
 
 
 	port := fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))
