@@ -34,7 +34,8 @@ Ex:
 
 |Endpoint|Method|Action|
 |--------|------|------|
-|`/v1/backup/`| POST | Create a backup of the database|
+|`/v1/backup`| POST | Create a backup of the database|
+|`/v1/stats` | GET | Get database stats |
 
 ### Backing Up
 
