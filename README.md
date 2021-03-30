@@ -23,7 +23,7 @@ another server.
 |`/v1/buckets/{bucket}/keys/{key}` | DELETE | Delete key|
 
 
-## Creating a  KV
+### Creating a  KV
 POST to the endpoint `/v1/buckets/{bucket}/keys/{key}` with the data in a payload.
 
 Ex:
