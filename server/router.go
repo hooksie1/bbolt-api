@@ -70,12 +70,10 @@ func Serve() {
 	apiRouter.Handle("/buckets/{bucket}/keys/{key}", errHandler(deleteKVByID)).Methods("DELETE")
 
 	adminRouter.Handle("/backup", errHandler(backupDB)).Methods("POST")
-
-
+	adminRouter.Handle("/stats", errHandler(getDBStats)).Methods("GET")
 
 	apiRouter.Use(logger)
 	adminRouter.Use(logger)
-
 
 	port := fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))
 	log.Fatal(http.ListenAndServe(port, router))
