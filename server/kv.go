@@ -17,6 +17,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"go.etcd.io/bbolt"
 	"net/http"
@@ -47,7 +48,7 @@ func getBucketKeys(w http.ResponseWriter, r *http.Request) error {
 
 	resp, err := json.Marshal(data)
 	if err != nil {
-		return NewHTTPError(err, 500, "error marshaling response")
+		return fmt.Errorf("error marrshaling kv data: %s", err)
 	}
 
 	w.Write(resp)
@@ -74,7 +75,7 @@ func getKVByID(w http.ResponseWriter, r *http.Request) error {
 
 	err := json.NewEncoder(w).Encode(record)
 	if err != nil {
-		return NewHTTPError(err, 500, "error encoding json data")
+		return fmt.Errorf("error encoding JSON data: %s", err)
 	}
 
 	return nil
@@ -84,12 +85,12 @@ func createKV(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	record, err := keyData(r.Body)
 	if err != nil {
-		return NewHTTPError(err, 500, "error decoding JSON data")
+		return err
 	}
 	db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
 		if err := bucket.Put([]byte(vars["key"]), []byte(record.Data)); err != nil {
-			return NewHTTPError(err, 500, "error writing key/value pair")
+			return fmt.Errorf("error creating kv pair: %s", err)
 		}
 
 		return nil
@@ -103,7 +104,7 @@ func deleteKVByID(w http.ResponseWriter, r *http.Request) error {
 	db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
 		if err := bucket.Delete([]byte(vars["key"])); err != nil {
-			return NewHTTPError(err, 500, "error deleting key")
+			return fmt.Errorf("error deleting kv pair: %s", err)
 		}
 
 		return nil

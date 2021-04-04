@@ -16,11 +16,37 @@ limitations under the License.
 package server
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"go.etcd.io/bbolt"
 	"net/http"
 )
 
+type BucketList struct {
+	Buckets []string `json:"buckets"`
+}
+
+func getBuckets(w http.ResponseWriter, r *http.Request) error {
+	var buckets BucketList
+
+	if err := db.View(func(tx *bbolt.Tx) error {
+		return tx.ForEach(func(name []byte, _ *bbolt.Bucket) error {
+			b := []string{string(name)}
+			buckets.Buckets = append(buckets.Buckets, b...)
+			return nil
+		})
+	}); err != nil {
+		return fmt.Errorf("error getting buckets: %s", err)
+	}
+
+	if err := json.NewEncoder(w).Encode(&buckets); err != nil {
+		return fmt.Errorf("error encoding json bucket data: %s", err)
+	}
+
+
+	return nil
+}
 func getBucketByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	if err := db.View(func(tx *bbolt.Tx) error {
@@ -42,7 +68,7 @@ func createBucket(w http.ResponseWriter, r *http.Request) error {
 	if err := db.Update(func(tx *bbolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(vars["bucket"]))
 		if err != nil {
-			return NewHTTPError(err, 500, "error creating bucket")
+			return fmt.Errorf("error creating bucket: %s", err)
 		}
 
 		return nil
@@ -57,7 +83,7 @@ func deleteBucketByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
 	if err := db.Update(func(tx *bbolt.Tx) error {
 		if err := tx.DeleteBucket([]byte(vars["bucket"])); err != nil {
-			return NewHTTPError(err, 500, "error deleting bucket")
+			return fmt.Errorf("error deleting bucket: %s", err)
 		}
 
 		return nil

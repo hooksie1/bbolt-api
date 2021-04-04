@@ -17,6 +17,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 )
 
@@ -24,7 +25,7 @@ func keyData(r io.Reader) (Record, error){
 	var record Record
 	err := json.NewDecoder(r).Decode(&record)
 	if err != nil {
-		return record, err
+		return record, fmt.Errorf("error decoding JSON data: %s", err)
 	}
 
 	return record, nil

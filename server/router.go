@@ -61,6 +61,7 @@ func Serve() {
 	apiRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
 	adminRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
 
+	apiRouter.Handle("/buckets", errHandler(getBuckets)).Methods("GET")
 	apiRouter.Handle("/buckets/{bucket}", errHandler(getBucketByID)).Methods("GET")
 	apiRouter.Handle("/buckets/{bucket}", errHandler(createBucket)).Methods("POST")
 	apiRouter.Handle("/buckets/{bucket}", errHandler(deleteBucketByID)).Methods("DELETE")
