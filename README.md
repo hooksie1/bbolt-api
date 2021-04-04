@@ -10,6 +10,7 @@ another server.
 
 |Endpoint|Method|Action|
 |--------|------|------|
+|`/v1/buckets`| GET | Return a list of all buckets |
 |`/v1/buckets/{bucket}`| GET | Return if Bucket exists|
 |`/v1/buckets/{bucket}`| POST | Create bucket|
 |`/v1/buckets/{bucket}`| DELETE | Delete bucket |
