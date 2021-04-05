@@ -43,3 +43,10 @@ Ex:
 Redirect the output to a file. Ex:
 
 `curl -X POST http://localhost:8080/v1/backup > backup.db`
+
+## Running With Docker
+
+`docker run -d --name api -v bolt-volume:/database -p 8080:8080 hooksie1/bbolt-api:v0.0.4`
+
+The container automatically stores the database named `bolt.db` in `/database`. Mount a volume 
+to `/database` to store locally. 
