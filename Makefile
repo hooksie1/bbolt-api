@@ -22,9 +22,15 @@ coverage:
 dep: ## Get the dependencies
 	@go get -u golang.org/x/lint/golint
 
-build: dep ## Build the binary file
+build: linux windows mac
+
+linux: dep
 	@CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-w -X '$(PKG)/cmd.Version=$(VERSION)'" -o bbolt-api
+
+windows: dep
 	@CGO_ENABLED=0 GOOS=windows go build -a -ldflags "-w -X '$(PKG)/cmd.Version=$(VERSION)'" -o bbolt-api.exe
+
+mac: dep
 	@CGO_ENABLED=0 GOOS=darwin go build -a -ldflags "-w -X '$(PKG)/cmd.Version=$(VERSION)'" -o bbolt-api-darwin
 
 docker: build
