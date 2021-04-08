@@ -1,10 +1,9 @@
 = API
 
-== Endpoints
-=== Buckets
+== Buckets
 
 [.getBuckets]
-==== getBuckets
+=== getBuckets
 `GET /v1/buckets`
 
 ===== Description
@@ -20,8 +19,10 @@ Get all buckets in database.
 | 200 | `{"buckets":["bucket"]}` | JSON
 |===
 
+___
+
 [.getBucketByID]
-==== getBucketByID
+=== getBucketByID
 
 `GET /v1/buckets/{id}`
 
@@ -38,8 +39,10 @@ Gets a bucket
 | 404 | |
 |===
 
+___
+
 [.deleteBucketByID]
-==== deleteBucketByID
+=== deleteBucketByID
 
 `DELETE /v1/buckets/{id}`
 
@@ -54,8 +57,10 @@ Deletes a bucket
 | 200 | |
 |===
 
+___
+
 [.createBucketByID]
-==== createBucketByID
+=== createBucketByID
 
 `POST /v1/buckets/{id}`
 
@@ -78,10 +83,12 @@ Creates a bucket
 | 404 | |
 |===
 
-=== Keys
+___
+
+== Keys
 
 [.getBucketKeys]
-==== getBucketKeys
+=== getBucketKeys
 
 `GET /v1/buckets/{bucketID}/keys`
 
@@ -97,8 +104,10 @@ Get all keys in a bucket
 | 404 | `{"details": "no kv pairs in bucket"}`| JSON
 |===
 
+___
+
 [.getKVByID]
-==== getKVByID
+=== getKVByID
 
 `GET /v1/buckets/{bucketID}/keys/{keyID}`
 
@@ -123,8 +132,10 @@ Get data from KV
 | 404 | `{"details":"kv not found"}`| JSON
 |===
 
+___
+
 [.createKV]
-==== createKV
+=== createKV
 
 `POST /v1/buckets/{bucketID}/keys/{keyID}`
 
@@ -150,8 +161,10 @@ Create KV pair
 | 200 | |
 |===
 
+___
+
 [.deleteKVByID]
-==== deleteKVByID
+=== deleteKVByID
 
 `DELETE /v1/buckets/{bucketID}/keys/{keyID}`
 
