@@ -34,7 +34,7 @@ mac: dep
 	@CGO_ENABLED=0 GOOS=darwin go build -a -ldflags "-w -X '$(PKG)/cmd.Version=$(VERSION)'" -o bbolt-api-darwin
 
 docker: build
-	@docker build -f Dockerfile.app -t hooksie1/bbolt-api:$(VERSION) .
+	@docker build -f Dockerfile -t hooksie1/bbolt-api:$(VERSION) .
 
 push: docker
 	@docker push hooksie1/bbolt-api:$(VERSION)
