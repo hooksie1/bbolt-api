@@ -1,2 +1,0 @@
-* xref:index.adoc[Overview]
-*** xref:api.adoc[API]

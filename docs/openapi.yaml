@@ -1,0 +1,188 @@
+openapi: 3.0.0
+info:
+  title: Bbolt API
+  version: 0.0.4
+servers:
+  - url: http://localhost:8080/v1
+paths:
+  /buckets:
+    get:
+      summary: get a list of all buckets
+      operationId: getBuckets
+      tags:
+        - buckets
+      parameters:
+      responses:
+        '200':
+          description: a list of all buckets
+          content:
+            application/json:
+              examples:
+                buckets:
+                  value:
+                    { "buckets": ["test","test2"] }
+  /buckets/{id}:
+    get:
+      summary: get a specific bucket
+      operationId: getBucketByID
+      tags:
+        - buckets
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: id of bucket
+        schema:
+          type: string
+          example: myBucket
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: create a new bucket
+      operationId: createBucketByID
+      tags:
+        - buckets
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: id of bucket
+        schema:
+          type: string
+          example: myBucket
+        responses:
+          '200':
+            description: OK
+          '404':
+            description: bucket not found
+    delete:
+      summary: delete a bucket
+      operationId: deleteBucketByID
+      tags:
+        - buckets
+      parameters:
+      responses:
+        '200':
+          description: OK
+  /buckets/{id}/keys:
+    get:
+      summary: get all keys in a bucket
+      operationId: getBucketKeys
+      tags:
+        - keys
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: id of bucket
+        schema:
+          type: string
+          example: myBucket
+      responses:
+        '200':
+          description: a list of all keys
+          content:
+            application/json:
+              examples:
+                keys:
+                  value:
+                    {"key1":"value1","key2":"value2"}
+        '404':
+          description: bucket not found
+  /buckets/{bucketID}/keys/{keyID}:
+    get:
+      summary: get value for specific key
+      operationId: getKVByID
+      tags:
+        - keys
+      parameters:
+      - name: bucketID
+        in: path
+        required: true
+        description: the bucket id
+        schema:
+          type: string
+          example: myBucket
+      - name: keyID
+        in: path
+        required: true
+        description: the key id
+        schema:
+          type: string
+          example: myKey
+      responses:
+        '200':
+          description: the value for the given key
+          content:
+            application/json:
+              examples:
+                keys:
+                  value:
+                    {"data": "value1"}
+        '404':
+          description: key or bucket not found
+    post:
+      summary: create new key
+      operationId: createKV
+      tags:
+        - keys
+      parameters:
+      - name: bucketID
+        in: path
+        required: true
+        description: the bucket id
+        schema:
+          type: string
+          example: myBucket
+      - name: keyID
+        in: path
+        required: true
+        description: the key id
+        schema:
+          type: string
+          example: myKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: #/components/schemas/Key
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: delete key
+      operationId: deleteKVByID
+      tags:
+        - keys
+      parameters:
+      - name: bucketID
+        in: path
+        required: true
+        description: the bucket id
+        schema:
+          type: string
+          example: myBucket
+      - name: keyID
+        in: path
+        required: true
+        description: the key id
+        schema:
+          type: string
+          example: myKey
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: key or bucket not found
+components:
+  schemas:
+    Key:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: string
+

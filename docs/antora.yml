@@ -1,5 +1,0 @@
-name: bbolt-api
-title: BoltDB API
-version: master
-nav:
-- modules/ROOT/nav.adoc
