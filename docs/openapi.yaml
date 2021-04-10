@@ -11,7 +11,6 @@ paths:
       operationId: getBuckets
       tags:
         - buckets
-      parameters:
       responses:
         '200':
           description: a list of all buckets
@@ -38,6 +37,8 @@ paths:
       responses:
         '200':
           description: OK
+        '404':
+          description: bucket not found
     post:
       summary: create a new bucket
       operationId: createBucketByID
@@ -54,17 +55,16 @@ paths:
         responses:
           '200':
             description: OK
-          '404':
-            description: bucket not found
     delete:
       summary: delete a bucket
       operationId: deleteBucketByID
       tags:
         - buckets
-      parameters:
       responses:
         '200':
           description: OK
+        '404':
+          description: bucket not found
   /buckets/{id}/keys:
     get:
       summary: get all keys in a bucket
@@ -147,7 +147,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: #/components/schemas/Key
+              type: object
+              properties:
+                data:
+                  type: string
+                    
       responses:
         '200':
           description: OK
@@ -176,13 +180,6 @@ paths:
           description: OK
         '404':
           description: key or bucket not found
-components:
-  schemas:
-    Key:
-      type: object
-      required:
-        - data
-      properties:
-        data:
-          type: string
+        
+        
 
