@@ -60,6 +60,14 @@ paths:
       operationId: deleteBucketByID
       tags:
         - buckets
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: id of bucket
+        schema:
+          type: string
+          example: myBucket
       responses:
         '200':
           description: OK
@@ -180,6 +188,4 @@ paths:
           description: OK
         '404':
           description: key or bucket not found
-        
-        
 
