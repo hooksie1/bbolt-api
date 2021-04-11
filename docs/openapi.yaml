@@ -10,7 +10,7 @@ paths:
       summary: get a list of all buckets
       operationId: getBuckets
       tags:
-        - buckets
+        - Buckets
       responses:
         '200':
           description: a list of all buckets
@@ -25,7 +25,7 @@ paths:
       summary: get a specific bucket
       operationId: getBucketByID
       tags:
-        - buckets
+        - Buckets
       parameters:
       - name: id
         in: path
@@ -43,7 +43,7 @@ paths:
       summary: create a new bucket
       operationId: createBucketByID
       tags:
-        - buckets
+        - Buckets
       parameters:
       - name: id
         in: path
@@ -59,7 +59,7 @@ paths:
       summary: delete a bucket
       operationId: deleteBucketByID
       tags:
-        - buckets
+        - Buckets
       parameters:
       - name: id
         in: path
@@ -78,7 +78,7 @@ paths:
       summary: get all keys in a bucket
       operationId: getBucketKeys
       tags:
-        - keys
+        - Keys
       parameters:
       - name: id
         in: path
@@ -103,7 +103,7 @@ paths:
       summary: get value for specific key
       operationId: getKVByID
       tags:
-        - keys
+        - Keys
       parameters:
       - name: bucketID
         in: path
@@ -134,7 +134,7 @@ paths:
       summary: create new key
       operationId: createKV
       tags:
-        - keys
+        - Keys
       parameters:
       - name: bucketID
         in: path
@@ -167,7 +167,7 @@ paths:
       summary: delete key
       operationId: deleteKVByID
       tags:
-        - keys
+        - Keys
       parameters:
       - name: bucketID
         in: path
@@ -193,7 +193,7 @@ paths:
       summary: get stats for the database
       operationId: getDBStats
       tags:
-        - admin
+        - Admin
       responses:
         '200':
           description: stats for the database
@@ -208,7 +208,7 @@ paths:
       summary: get backup of database
       operationId: backupDB
       tags:
-        - admin
+        - Admin
       responses:
         '200':
           description: binary database contents (pipe to file for backup)
