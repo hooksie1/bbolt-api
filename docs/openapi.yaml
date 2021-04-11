@@ -125,7 +125,7 @@ paths:
           content:
             application/json:
               examples:
-                keys:
+                myKey:
                   value:
                     {"data": "value1"}
         '404':
@@ -188,4 +188,32 @@ paths:
           description: OK
         '404':
           description: key or bucket not found
+  /stats:
+    get:
+      summary: get stats for the database
+      operationId: getDBStats
+      tags:
+        - admin
+      responses:
+        '200':
+          description: stats for the database
+          content:
+            application/json:
+              examples:
+                stats:
+                  value:
+                    {"total_read_transactions":14,"total_writes":9,"total_disk_write_duration":0.014126732}
+  /backup:
+    post:
+      summary: get backup of database
+      operationId: backupDB
+      tags:
+        - admin
+      responses:
+        '200':
+          description: binary database contents (pipe to file for backup)
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
 
