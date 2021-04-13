@@ -3,7 +3,7 @@ info:
   title: Bbolt API
   version: 0.0.5
 servers:
-  - url: http://localhost:8080/v1
+  - url: /v1
 paths:
   /buckets:
     get:
