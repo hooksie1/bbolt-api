@@ -8,7 +8,7 @@ another server.
 
 ## API Documentation
 
-Visit the [Documentation site](https://bbolt-docs.hooks.technology)
+The application now has an API explorer built in using the Swagger UI. It's located at `/v1/docs/`.
 
 ## Running With Docker
 
