@@ -1,0 +1,219 @@
+openapi: 3.0.0
+info:
+  title: Bbolt API
+  version: 0.0.5
+servers:
+  - url: http://localhost:8080/v1
+paths:
+  /buckets:
+    get:
+      summary: get a list of all buckets
+      operationId: getBuckets
+      tags:
+        - Buckets
+      responses:
+        '200':
+          description: a list of all buckets
+          content:
+            application/json:
+              examples:
+                buckets:
+                  value:
+                    { "buckets": ["test","test2"] }
+  /buckets/{id}:
+    get:
+      summary: get a specific bucket
+      operationId: getBucketByID
+      tags:
+        - Buckets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of bucket
+          schema:
+            type: string
+            example: myBucket
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: bucket not found
+    post:
+      summary: create a new bucket
+      operationId: createBucketByID
+      tags:
+        - Buckets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of bucket
+          schema:
+            type: string
+            example: myBucket
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: delete a bucket
+      operationId: deleteBucketByID
+      tags:
+        - Buckets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of bucket
+          schema:
+            type: string
+            example: myBucket
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: bucket not found
+  /buckets/{id}/keys:
+    get:
+      summary: get all keys in a bucket
+      operationId: getBucketKeys
+      tags:
+        - Keys
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of bucket
+          schema:
+            type: string
+            example: myBucket
+      responses:
+        '200':
+          description: a list of all keys
+          content:
+            application/json:
+              examples:
+                keys:
+                  value:
+                    {"key1":"value1","key2":"value2"}
+        '404':
+          description: bucket not found
+  /buckets/{bucketID}/keys/{keyID}:
+    get:
+      summary: get value for specific key
+      operationId: getKVByID
+      tags:
+        - Keys
+      parameters:
+        - name: bucketID
+          in: path
+          required: true
+          description: the bucket id
+          schema:
+            type: string
+            example: myBucket
+        - name: keyID
+          in: path
+          required: true
+          description: the key id
+          schema:
+            type: string
+            example: myKey
+      responses:
+        '200':
+          description: the value for the given key
+          content:
+            application/json:
+              examples:
+                myKey:
+                  value:
+                    {"data": "value1"}
+        '404':
+          description: key or bucket not found
+    post:
+      summary: create new key
+      operationId: createKV
+      tags:
+        - Keys
+      parameters:
+        - name: bucketID
+          in: path
+          required: true
+          description: the bucket id
+          schema:
+            type: string
+            example: myBucket
+        - name: keyID
+          in: path
+          required: true
+          description: the key id
+          schema:
+            type: string
+            example: myKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: delete key
+      operationId: deleteKVByID
+      tags:
+        - Keys
+      parameters:
+        - name: bucketID
+          in: path
+          required: true
+          description: the bucket id
+          schema:
+            type: string
+            example: myBucket
+        - name: keyID
+          in: path
+          required: true
+          description: the key id
+          schema:
+            type: string
+            example: myKey
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: key or bucket not found
+  /stats:
+    get:
+      summary: get stats for the database
+      operationId: getDBStats
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: stats for the database
+          content:
+            application/json:
+              examples:
+                stats:
+                  value:
+                    {"total_read_transactions":14,"total_writes":9,"total_disk_write_duration":0.014126732}
+  /backup:
+    post:
+      summary: get backup of database
+      operationId: backupDB
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: binary database contents (pipe to file for backup)
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+

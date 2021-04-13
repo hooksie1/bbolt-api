@@ -18,12 +18,14 @@ package server
 
 import (
 	"fmt"
+	"github.com/rakyll/statik/fs"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
+	_ "github.com/hooksie1/bbolt-api/statik"
 )
 
 var dbName = os.Getenv("DATABASE_PATH")
@@ -56,6 +58,11 @@ func Serve() {
 
 	defer db.Close()
 
+	statikFS, err := fs.New()
+	if err != nil{
+		log.Println(err)
+	}
+
 
 	router := mux.NewRouter().StrictSlash(true)
 	apiRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
@@ -72,6 +79,7 @@ func Serve() {
 
 	adminRouter.Handle("/backup", errHandler(backupDB)).Methods("POST")
 	adminRouter.Handle("/stats", errHandler(getDBStats)).Methods("GET")
+	adminRouter.PathPrefix("/docs/").Handler(http.StripPrefix("/v1/docs/", http.FileServer(statikFS)))
 
 	apiRouter.Use(logger)
 	adminRouter.Use(logger)

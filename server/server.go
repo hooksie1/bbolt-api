@@ -85,6 +85,8 @@ func logger(inner http.Handler) http.Handler {
 
 func (fn errHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
+	w.Header().Set("Content-Type", "application/json")
+
 	err := fn(w, r)
 	if err == nil {
 		return
