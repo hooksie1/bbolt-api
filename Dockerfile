@@ -1,4 +1,4 @@
-FROM golang:alpine as builder
+FROM golang:1.16-alpine as builder
 WORKDIR /app
 RUN apk update && apk upgrade && apk add --no-cache ca-certificates make
 RUN update-ca-certificates 
