@@ -24,12 +24,13 @@ import (
 )
 
 type Record struct {
-	Data string `json:"data"`
+	Key string `json:"key"`
+	Value string `json:"data"`
 }
 
 func getBucketKeys(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
-	data := make(map[string]string)
+	var records []Record
 	if err := db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
 		if bucket == nil {
@@ -38,7 +39,11 @@ func getBucketKeys(w http.ResponseWriter, r *http.Request) error {
 		cursor := bucket.Cursor()
 
 		for k, v := cursor.First(); k != nil; k, v = cursor.Next() {
-			data[string(k)] = string(v)
+			record := Record{
+				Key: string(k),
+				Value: string(v),
+			}
+			records = append(records, record)
 		}
 
 		return nil
@@ -46,7 +51,7 @@ func getBucketKeys(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	resp, err := json.Marshal(data)
+	resp, err := json.Marshal(records)
 	if err != nil {
 		return fmt.Errorf("error marrshaling kv data: %s", err)
 	}
@@ -66,7 +71,8 @@ func getKVByID(w http.ResponseWriter, r *http.Request) error {
 			return NewHTTPError(nil, 404, "kv not found")
 		}
 
-		record.Data = string(value)
+		record.Value = string(value)
+		record.Key = vars["key"]
 
 		return nil
 	}); err != nil {
@@ -89,7 +95,7 @@ func createKV(w http.ResponseWriter, r *http.Request) error {
 	}
 	db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
-		if err := bucket.Put([]byte(vars["key"]), []byte(record.Data)); err != nil {
+		if err := bucket.Put([]byte(vars["key"]), []byte(record.Value)); err != nil {
 			return fmt.Errorf("error creating kv pair: %s", err)
 		}
 
