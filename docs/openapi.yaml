@@ -95,7 +95,7 @@ paths:
               examples:
                 keys:
                   value:
-                    {"key1":"value1","key2":"value2"}
+                    [{"key1":"value1"},{"key2":"value2"}]
         '404':
           description: bucket not found
   /buckets/{bucketID}/keys/{keyID}:

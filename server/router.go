@@ -17,19 +17,22 @@ limitations under the License.
 package server
 
 import (
+	"embed"
 	"fmt"
-	"github.com/rakyll/statik/fs"
 	"go.etcd.io/bbolt"
 	"log"
 	"net/http"
 	"os"
+	_ "embed"
 
 	"github.com/gorilla/mux"
-	_ "github.com/hooksie1/bbolt-api/statik"
 )
 
 var dbName = os.Getenv("DATABASE_PATH")
 var db *bbolt.DB
+
+//go:embed docs/*
+var static embed.FS
 
 type errHandler func(http.ResponseWriter, *http.Request) error
 
@@ -58,11 +61,6 @@ func Serve() {
 
 	defer db.Close()
 
-	statikFS, err := fs.New()
-	if err != nil{
-		log.Println(err)
-	}
-
 
 	router := mux.NewRouter().StrictSlash(true)
 	apiRouter := router.PathPrefix("/v1").Subrouter().StrictSlash(true)
@@ -79,7 +77,7 @@ func Serve() {
 
 	adminRouter.Handle("/backup", errHandler(backupDB)).Methods("POST")
 	adminRouter.Handle("/stats", errHandler(getDBStats)).Methods("GET")
-	adminRouter.PathPrefix("/docs/").Handler(http.StripPrefix("/v1/docs/", http.FileServer(statikFS)))
+	adminRouter.PathPrefix("/docs/").Handler(http.StripPrefix("/v1/", http.FileServer(http.FS(static))))
 
 	apiRouter.Use(logger)
 	adminRouter.Use(logger)
