@@ -93,28 +93,36 @@ func createKV(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	db.Update(func(tx *bbolt.Tx) error {
+	if err := db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
+		if bucket == nil {
+			return NewHTTPError(nil, 404, "bucket not found")
+		}
+
 		if err := bucket.Put([]byte(vars["key"]), []byte(record.Value)); err != nil {
 			return fmt.Errorf("error creating kv pair: %s", err)
 		}
 
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func deleteKVByID(w http.ResponseWriter, r *http.Request) error {
 	vars := mux.Vars(r)
-	db.Update(func(tx *bbolt.Tx) error {
+	if err := db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(vars["bucket"]))
 		if err := bucket.Delete([]byte(vars["key"])); err != nil {
 			return fmt.Errorf("error deleting kv pair: %s", err)
 		}
 
 		return nil
-	})
+	}); err != nil {
+		return err
+	}
 
 	return nil
 }
